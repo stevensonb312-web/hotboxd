@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOTBOXD - Rate What You Smoke</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --accent: #00E676; /* Neon Green */
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background-color: #0a0a0a;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--accent);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 20px;
+            max-width: 400px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: white;
+            outline: none;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--accent);
+        }
+
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #333;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px 0;
+            background-color: #1a1a1a;
+        }
+
+        .nav-tabs button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            padding-bottom: 5px;
+            transition: color 0.3s;
+        }
+
+        .nav-tabs button:hover, .nav-tabs button.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px 5%;
+        }
+
+        .category-tag {
+            background-color: #333;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .category-tag:hover {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Feed / Main Content */
+        .feed-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .item-card {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+
+        .item-header {
+            display: flex;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .item-img {
+            width: 100px;
+            height: 100px;
+            background-color: #444;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .item-info h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .item-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Reviews inside the card */
+        .reviews-section {
+            padding: 15px;
+            border-top: 1px solid #333;
+            background-color: #171717;
+        }
+
+        .review {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .review:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .user-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .user-link:hover {
+            text-decoration: underline;
+        }
+
+        .rating-link {
+            display: block;
+            margin-top: 5px;
+            color: var(--text-main);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .rating-link:hover {
+            color: #ddd;
+        }
+
+        .stars {
+            color: #FFD700; /* Gold */
+            letter-spacing: 2px;
+        }
+
+        .review-images {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .review-images img {
+            width: 60px;
+            height: 60px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        /* Make a Review Form (Hidden by default) */
+        #make-review-form {
+            display: none;
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: white;
+        }
+
+        .submit-btn {
+            background-color: var(--accent);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #00c968;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">HOTBOXD</div>
+        <div class="search-bar">
+            <input type="search" placeholder="Search strains, brands, users...">
+        </div>
+        <a href="#profile" class="profile-icon" title="View Profile" target="_blank">👤</a>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="active" onclick="switchTab('feed')">Top Ratings</button>
+        <button onclick="switchTab('feed')">New Ratings</button>
+        <button onclick="switchTab('feed')">What's Trending</button>
+        <button onclick="switchTab('review')">Make a Review</button>
+    </nav>
+
+    <div class="categories" id="category-filters">
+        <div class="category-tag">FLOWER</div>
+        <div class="category-tag">CARTS</div>
+        <div class="category-tag">DISPOSABLE</div>
+        <div class="category-tag">PREROLLS</div>
+        <div class="category-tag">BEVERAGES</div>
+        <div class="category-tag">CONCENTRATES</div>
+    </div>
+
+    <main class="feed-container" id="feed-container">
+        
+        <div class="item-card">
+            <div class="item-header">
+                <img src="https://via.placeholder.com/100/333333/00E676?text=IMG" alt="Item Image" class="item-img">
+                <div class="item-info">
+                    <h2>Ghost Train Haze</h2>
+                    <p>Sativa dominant hybrid. Earthy, citrus, and sweet flavor profile.</p>
+                </div>
+            </div>
+            
+            <div class="reviews-section">
+                <div class="review">
+                    <a href="#user-profile-1" target="_blank" class="user-link">@SmokeyBear99</a> 
+                    <span class="stars">★★★★★</span>
+                    
+                    <a href="#full-rating-1" target="_blank" class="rating-link">
+                        "Absolutely top tier. Hit me immediately, great for a weekend hike. The buds were incredibly frosty."
+                    </a>
+                    
+                    <div class="review-images">
+                        <img src="https://via.placeholder.com/60/444444/FFFFFF?text=User+Img" alt="User submitted image">
+                    </div>
+                </div>
+
+                <div class="review">
+                    <a href="#user-profile-2" target="_blank" class="user-link">@JaneDope</a> 
+                    <span class="stars">★★★★☆</span>
+                    
+                    <a href="#full-rating-2" target="_blank" class="rating-link">
+                        "Really solid. A bit dry out of the package but nothing a humidity pack couldn't fix. Great taste."
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="item-header">
+                <img src="https://via.placeholder.com/100/333333/00E676?text=IMG" alt="Item Image" class="item-img">
+                <div class="item-info">
+                    <h2>Live Resin 510 Cart - Blue Dream</h2>
+                    <p>High THC live resin cartridge. Smooth draw, blueberry notes.</p>
+                </div>
+            </div>
+            
+            <div class="reviews-section">
+                <div class="review">
+                    <a href="#user-profile-3" target="_blank" class="user-link">@ExtractExpert</a> 
+                    <span class="stars">★★★★★</span>
+                    
+                    <a href="#full-rating-3" target="_blank" class="rating-link">
+                        "Best cart on the market right now. Never clogs, tastes exactly like the flower."
+                    </a>
+                    
+                    <div class="review-images">
+                        <img src="https://via.placeholder.com/60/444444/FFFFFF?text=User+Img" alt="User submitted image">
+                        <img src="https://via.placeholder.com/60/444444/FFFFFF?text=User+Img" alt="User submitted image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="make-review-form">
+        <h2 style="margin-bottom: 20px; color: var(--accent);">Drop a Review</h2>
+        
+        <div class="form-group">
+            <label>Item Link (OCS or Brand site)</label>
+            <input type="url" placeholder="https://ocs.ca/...">
+        </div>
+
+        <div class="form-group">
+            <label>Category</label>
+            <select>
+                <option>Flower</option>
+                <option>Carts</option>
+                <option>Disposable</option>
+                <option>Prerolls</option>
+                <option>Beverages</option>
+                <option>Concentrates</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Upload Image</label>
+            <input type="file" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label>Your Review</label>
+            <textarea rows="5" placeholder="What did you think?"></textarea>
+        </div>
+
+        <button class="submit-btn">Post Review</button>
+    </div>
+
+    <script>
+        // Simple script to toggle between the feed and the "Make a Review" form
+        function switchTab(tab) {
+            const feed = document.getElementById('feed-container');
+            const form = document.getElementById('make-review-form');
+            const categories = document.getElementById('category-filters');
+            
+            if (tab === 'review') {
+                feed.style.display = 'none';
+                categories.style.display = 'none';
+                form.style.display = 'block';
+            } else {
+                feed.style.display = 'block';
+                categories.style.display = 'flex';
+                form.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
